@@ -1,1 +1,0 @@
-1、video_to_pic.exe  将视频中检测到的人脸保存到save_path中，不分类。
