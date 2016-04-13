@@ -18,6 +18,7 @@ def main(vedio_path,pic_save_path,pic_imagelist,clean_save_path,proto,model,\
     text_process.creat_imagelist_NoLabel(pic_save_path,pic_imagelist)
     vedio.sharpness_clean(pic_imagelist,clean_save_path,clean_dis)
     print u'第三步，提取特征'
+    text_process.creat_imagelist_NoLabel(clean_save_path,clean_imagelist)
     vedio.ext_feature(proto,model,clean_imagelist,feature_path)
     print u'第四步，分类'
     classficition.classficition(feature_path,result_save_path,clean_save_path,suff)
@@ -27,8 +28,8 @@ if __name__ == '__main__':
     pic_save_path = 'E:/practical_face/avi3/picture'
     pic_imagelist = 'E:/practical_face/avi3/pic_imagelist.txt'
     clean_save_path = 'E:/practical_face/avi3/clean'
-    proto = 'C:/Users/Administrator/Desktop/wumodel/LightenedCNN_B_deploy_memory.prototxt'
-    model = 'C:/Users/Administrator/Desktop/wumodel/LightenedCNN_B.caffemodel'
+    proto = 'C:/Users/Administrator/Desktop/wumodel/net_deploy.prototxt'
+    model = 'C:/Users/Administrator/Desktop/wumodel/net.caffemodel'
     clean_imagelist = 'E:/practical_face/avi3/clean_imagelist.txt'
     feature_path = 'E:/practical_face/avi3/feature'
     result_save_path = 'E:/practical_face/avi3/result'
