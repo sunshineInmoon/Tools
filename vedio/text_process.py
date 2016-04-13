@@ -8,6 +8,7 @@ Created on Thu Mar 31 11:51:03 2016
 import cv2
 import os
 import shutil
+import numpy as np
 
 '''
 函数：name_convert（）
@@ -95,6 +96,40 @@ def CreatImageListWithLabel(dir_path,imagelist):
                    Label_Num = label
     print u'共有%d类'%(Label_Num)
     fr.close()
+    
+'''
+函数：load()
+函数功能：将一个文本文件中的特征读取到一个list中
+输入参数：file_path----文本文件路径
+'''
+def load(file_path):
+    if not os.path.exists(file_path):
+        print u'路径不存在： ',file_path
+        return -1
+    fr = open(file_path,'r')
+    lines = fr.readlines()
+    features = []
+    for line in lines:
+        word = float(line.strip('\n'))
+        features.append(word)
+    fr.close()
+    feature = np.array(features)
+    return feature
+
+'''
+函数：Pic_Num()
+功能：统计文件夹中图片的数量
+输入参数：dir_path----保存图片的文件夹路径
+'''
+def Pic_Num(dir_path,count):
+    parents = os.listdir(dir_path)
+    for parent in parents:
+        child = os.path.join(dir_path,parent)
+        if os.path.isdir(child):
+            Pic_Num(child,count)
+        else:
+            count[0] += 1
+    return int(count[0])
 
 if __name__ == '__main__':
     dir_name = 'E:/practical_face/LogPhoto'
@@ -112,4 +147,7 @@ if __name__ == '__main__':
     '''
     clean_image('E:/practical_face/result/clean_imagelist.txt','E:/practical_face/result/clean_image')
     '''
-    CreatImageListWithLabel(dir_name,imagelist)
+    #CreatImageListWithLabel(dir_name,imagelist)
+    L = load('E:/practical_face/result/code/video/Output/txt/000000000.txt')
+    #a = Pic_Num('E:/practical_face/result/code/video/Output/txt',L=[0])
+    #print a

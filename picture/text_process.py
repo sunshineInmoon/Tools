@@ -73,10 +73,50 @@ def clean_image(imagelist,dir_path_save):
             print u"clean_image  %d  张图片"%(num)
     print u"已经完成 clean_image  共%d张图片"%(num)
 
+'''
+函数：CreatImageListWithLabel()
+功能：创建caffe imagelist.txt 文件，此文件带标签
+输入参数：dir_path 图片路径，一般为保存很多子文件夹的跟文件夹路径
+         imgelist 输出文件路径默认是当前文件夹下
+'''
+def CreatImageListWithLabel(dir_path,imagelist):
+    fr = open(imagelist,'w')
+    Label_Num = 0
+    for parent,dirnames,filenames in os.walk(dir_path):
+        #print u'共有%d个子文件夹，即共有%d类'%(len(dirnames),len(dirnames))
+        for label,dirname in enumerate(dirnames):
+            #print cls
+            #print dirname
+           for subparent,subdirnames,subfilenames in os.walk(dir_path + '/' + dirname):
+               for filename in subfilenames:
+                   #print dirname + '/' + filename
+                   image_path ="%s%s%s%s %d\n"%('/',dirname,'/',filename,label)
+                   fr.write(image_path)
+                   Label_Num = label
+    print u'共有%d类'%(Label_Num)
+    fr.close()
+    
+'''
+函数：load()
+函数功能：将一个文本文件中的特征读取到一个list中
+输入参数：file_path----文本文件路径
+'''
+def load(file_path):
+    if not os.path.exists(file_path):
+        print u'路径不存在： ',file_path
+        return -1
+    fr = open(file_path,'r')
+    lines = fr.readlines()
+    features = []
+    for line in lines:
+        word = float(line.strip('\n'))
+        features.append(word)
+    return features
 
 if __name__ == '__main__':
-    dir_name = 'E:/practical_face/passerbPhoto'
+    dir_name = 'E:/practical_face/LogPhoto'
     dir_name_save = 'E:/practical_face/result/passerbPhoto'
+    imagelist = 'E:/practical_face/imagelist.txt'
     if not os.path.exists(dir_name_save):
         os.mkdir(dir_name_save)
         '''
@@ -86,4 +126,8 @@ if __name__ == '__main__':
     imagelist_path = 'E:/practical_face/result/imagelist.txt'
     creat_imagelist_NoLabel(dir_name_save,imagelist_path)
     '''
+    '''
     clean_image('E:/practical_face/result/clean_imagelist.txt','E:/practical_face/result/clean_image')
+    '''
+    #CreatImageListWithLabel(dir_name,imagelist)
+    L = load('E:/practical_face/result/code/video/Output/txt/000000000.txt')
