@@ -27,7 +27,7 @@ def classficition(features_path,save_path,picture_path,suff='.bmp'):
     all_num = text_process.Pic_Num(features_path,count=[0])
     mark = [0]*all_num
     file_num = 0
-    dis = 0.65
+    dis = 0.65# 此阈值可根据你自己需要更改
     
     for i in range(all_num):
         if mark[i] != 0:
