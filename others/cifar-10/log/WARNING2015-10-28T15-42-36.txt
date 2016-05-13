@@ -1,0 +1,4 @@
+Log file created at: 2015/10/28 15:42:37
+Running on machine: PC-201508191808
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+F1028 15:42:37.067944  9464 upgrade_proto.cpp:928] Check failed: ReadProtoFromTextFile(param_file, param) Failed to parse NetParameter file: C:/Users/Administrator/Desktop/caffe_test/cifar-10/cifar10_train_prototxt

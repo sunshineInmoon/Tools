@@ -1,0 +1,12 @@
+net: "C:/Users/Administrator/Desktop/caffe_test/cifar-10/cifar10_train_prototxt"
+test_iter: 100
+test_interval: 500
+base_lr: 0.001
+momentum: 0.9
+weight_decay: 0.004
+lr_policy: "fixed"
+display: 100
+max_iter: 4000
+snapshot: 4000
+snapshot_prefix: "C:/Users/Administrator/Desktop/caffe_test/cifar-10/cifar10_quick"
+solver_mode: GPU

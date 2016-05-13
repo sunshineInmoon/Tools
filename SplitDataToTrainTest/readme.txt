@@ -1,0 +1,20 @@
+2016年5月13日09:40:14
+No1.SplitDataTo_Train_Test.py
+'''
+函数：SplitData（）
+功能：将一个数据集按照特定比例分离成训练和测试两个数据集
+输入参数：dir_path---存放数据集的文件夹路径
+         percent---这里的百分比是训练集占总数据集的百分比
+         train_path---训练集路径
+         test_path---测试集路径
+'''
+
+No2.data_to_train.py
+'''
+函数：DataToTrain()
+功能：从预处理后的数据集到训练前数据的处理，包括数据的分离，转换caffe数据格式
+    计算平均值
+输入参数：dir_path----预处理后的数据，一般是保存文件的问价夹
+         out_path----处理后保存文件夹和文件的路径
+         Format----转换后的数据格式默认leveldb
+'''

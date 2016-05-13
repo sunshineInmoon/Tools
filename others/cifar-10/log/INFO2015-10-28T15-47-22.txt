@@ -1,0 +1,20 @@
+Log file created at: 2015/10/28 15:47:22
+Running on machine: PC-201508191808
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I1028 15:47:22.123247 10740 caffe.cpp:183] Using GPUs 0
+I1028 15:47:22.334259 10740 solver.cpp:54] Initializing solver from parameters: 
+test_iter: 100
+test_interval: 500
+base_lr: 0.001
+display: 100
+max_iter: 4000
+lr_policy: "fixed"
+momentum: 0.9
+weight_decay: 0.004
+snapshot: 4000
+snapshot_prefix: "C:/Users/Administrator/Desktop/caffe_test/cifar-10/cifar10_quick"
+solver_mode: GPU
+device_id: 0
+net: "C:/Users/Administrator/Desktop/caffe_test/cifar-10/cifar10_train_prototxt"
+I1028 15:47:22.335259 10740 solver.cpp:96] Creating training net from net file: C:/Users/Administrator/Desktop/caffe_test/cifar-10/cifar10_train_prototxt
+F1028 15:47:22.337260 10740 upgrade_proto.cpp:928] Check failed: ReadProtoFromTextFile(param_file, param) Failed to parse NetParameter file: C:/Users/Administrator/Desktop/caffe_test/cifar-10/cifar10_train_prototxt
