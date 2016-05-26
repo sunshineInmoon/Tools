@@ -8,7 +8,7 @@ Created on Thu Mar 31 11:51:03 2016
 import cv2
 import os
 import shutil
-import numpy as np
+import csv as CSV
 
 '''
 函数：name_convert（）
@@ -38,18 +38,36 @@ def name_convert(dir_name,dir_name_save):
 功能：是把一个文件夹下所有图片写进一个imagelist.txt文件中
 输入参数：dir_path 存放图片的文件夹
          imagelist_path,保存路径
+         issubdir----是否有子文件 修改于2016年5月19日14:27:14
 '''
-def creat_imagelist_NoLabel(dir_path,imagelist_path):
-    fr = open(imagelist_path,'w')
-    count = 0
-    for dirpath,dirnames,filenames in os.walk(dir_path):
-        for files in filenames:
-            image_path = dir_path + '/' + files + '\n'
-            fr.write(image_path)
-            count += 1
-    fr.close()
-    print u'creat_imageslist_NoLabel 完成，共%d张图片'%(count)
-    
+def creat_imagelist_NoLabel(dir_path,imagelist_path,issubdir='false'):
+    if issubdir == 'false':
+        fr = open(imagelist_path,'w')
+        count = 0
+        for dirpath,dirnames,filenames in os.walk(dir_path):
+            for files in filenames:
+                image_path = dir_path + '/' + files + '\n'
+                fr.write(image_path)
+                count += 1
+        fr.close()
+        print u'creat_imageslist_NoLabel 完成，共%d张图片'%(count)
+    else:#修改于2016年5月19日14:28:51
+        fr = open(imagelist_path,'w')
+        count = 0
+        dirs = os.listdir(dir_path)
+        for sub in dirs:
+            sub_name = dir_path + '/' + sub
+            if os.path.isdir(sub_name):
+                files = os.listdir(sub_name)
+                for filename in files:
+                    file_path = sub_name + '/' + filename
+                    fr.write(file_path+'\n')
+                    count += 1
+            else:
+                fr.write(sub_name+'\n')
+                count += 1
+        fr.close()
+        print u'creat_imageslist_NoLabel 完成，共%d张图片'%(count)
     
 '''
 函数：clean_image()
@@ -96,49 +114,63 @@ def CreatImageListWithLabel(dir_path,imagelist):
                    Label_Num = label
     print u'共有%d类'%(Label_Num)
     fr.close()
-    
-'''
-函数：load()
-函数功能：将一个文本文件中的特征读取到一个list中
-输入参数：file_path----文本文件路径
-'''
-def load(file_path):
-    if not os.path.exists(file_path):
-        print u'路径不存在： ',file_path
-        return -1
-    fr = open(file_path,'r')
-    lines = fr.readlines()
-    features = []
-    for line in lines:
-        word = float(line.strip('\n'))
-        features.append(word)
-    fr.close()
-    feature = np.array(features)
-    return feature
 
 '''
-函数：Pic_Num()
-功能：统计文件夹中图片的数量
-输入参数：dir_path----保存图片的文件夹路径
+函数：TxtToCsv（）
+函数功能：将.txt文件转换成csv，这个函数只是在特定情况，针对特定类型.txt使用，
+        并不通用
+输入参数：txt----.txt文件
+         csv----.csv文件
 '''
-def Pic_Num(dir_path,count):
-    parents = os.listdir(dir_path)
-    for parent in parents:
-        child = os.path.join(dir_path,parent)
-        if os.path.isdir(child):
-            Pic_Num(child,count)
+def TxtToCsv(txtfile,csvfile):
+    fr = open(txtfile,'r')
+    csvfile = file(csvfile,'wb')
+    writer = CSV.writer(csvfile)
+    writer.writerow(['No','Sample','Similar'])
+    num = 0
+    for line in fr.readlines():
+        #print line
+        curline = line.strip().split('，')
+        no = num
+        if curline[1] == u'负样本'.encode('UTF-8'):
+            sample = 0
         else:
-            count[0] += 1
-    return int(count[0])
+            sample = 1
+        sim = curline[2].split(':')[-1]
+        data=[no,sample,sim]
+        writer.writerow(data)
+        num += 1
 
-
+'''
+函数：Find（）
+函数功能：寻找包含特定文件数的文件夹
+输入参数：dirpath----数据集路径
+         num----文件夹的数量
+'''
+def Find(dirpath,num=0):
+    if not os.path.exists(dirpath):
+        print u'路径不存在！'
+    dirs = os.listdir(dirpath)
+    for sub in dirs:
+        subdir = dirpath + '/' + sub
+        files = os.listdir(subdir)
+        if len(files) == num:
+            print subdir
+            img = cv2.imread(subdir+'/'+files[0])
+            cv2.imshow('res',img)
+            cv2.waitKey()
+            cv2.destroyWindow('res') 
+        else:
+            continue
 if __name__ == '__main__':
+    '''
     dir_name = 'E:/practical_face/LogPhoto'
     dir_name_save = 'E:/practical_face/result/passerbPhoto'
     imagelist = 'E:/practical_face/imagelist.txt'
     if not os.path.exists(dir_name_save):
         os.mkdir(dir_name_save)
         '''
+    '''
     name_convert(dir_name,dir_name_save)
     '''
     '''
@@ -149,6 +181,9 @@ if __name__ == '__main__':
     clean_image('E:/practical_face/result/clean_imagelist.txt','E:/practical_face/result/clean_image')
     '''
     #CreatImageListWithLabel(dir_name,imagelist)
-    L = load('E:/practical_face/result/code/video/Output/txt/000000000.txt')
-    #a = Pic_Num('E:/practical_face/result/code/video/Output/txt',L=[0])
-    #print a
+    '''
+    txt = r'E:/Face_data/result_my_2.txt'
+    csv = r'E:/Face_data/result.csv'
+    TxtToCsv(txt,csv)
+    '''
+    Find('E:/Face_data/FaceImages3')
