@@ -17,19 +17,35 @@ import sys
          new_h，new_w----新图片的高度和宽度
 '''
 def Resize(dir_path,new_h,new_w):
-    for dirs in os.listdir(dir_path):
-        print dirs
-        sub_dir = dir_path + '/' + dirs
-        if os.path.isdir(sub_dir):
-            for files in os.listdir(sub_dir):
-                print files
-                file_path = sub_dir + '/' + files
-                img = cv2.imread(file_path)
-                shape = img.shape
-                if (int(shape[0])==new_h) and (int(shape[1])==new_w):
-                    continue
-                res = cv2.resize(img,(new_h,new_w),interpolation=cv2.INTER_CUBIC)
-                cv2.imwrite(file_path,res)
+    if not os.path.exists(dir_path):
+        print u'批量调整图片大小的图片库路径不存在'
+        sys.exit(0)
+    dirs = os.listdir(dir_path)
+    if os.path.isdir(dir_path+'/'+dirs[0]):
+        for subdir in dirs:
+            #print dirs
+            sub_dir = dir_path + '/' + subdir
+            if os.path.isdir(sub_dir):
+                for files in os.listdir(sub_dir):
+                    print files
+                    file_path = sub_dir + '/' + files
+                    img = cv2.imread(file_path)
+                    shape = img.shape
+                    if (int(shape[0])==new_h) and (int(shape[1])==new_w):
+                        continue
+                    res = cv2.resize(img,(new_h,new_w),interpolation=cv2.INTER_CUBIC)
+                    cv2.imwrite(file_path,res)
+    else:
+        sub_dir = dir_path
+        for files in os.listdir(sub_dir):
+            print files
+            file_path = sub_dir + '/' + files
+            img = cv2.imread(file_path)
+            shape = img.shape
+            if (int(shape[0])==new_h) and (int(shape[1])==new_w):
+                continue
+            res = cv2.resize(img,(new_h,new_w),interpolation=cv2.INTER_CUBIC)
+            cv2.imwrite(file_path,res)
 
 '''
 函数：DataAugmentFlip（）
