@@ -304,6 +304,37 @@ def DataAugmentCrop(picdir,new_w,new_h,leftup=True,leftdown=False,\
                         
 
 '''
+函数:ReduceData()
+函数：如果文件中的图片数量多于num，则随机选择num
+输入参数：dirpath----图片库路径
+         num----数量阈值
+'''
+def ReduceData(dirpath,num):
+    if not os.path.exists(dirpath):
+        print u'ReduceData  输入数据库路径不存在'
+        sys.exit(0)
+    dirs = os.listdir(dirpath)
+    if os.path.isdir(dirpath+'/'+dirs[0]):
+        for sub in dirs:
+            subdir = dirpath+'/'+sub
+            files = os.listdir(subdir)
+            filenum = len(files)
+            if filenum>num:
+                subfiles = random.sample(files,filenum-num)
+                for fr in subfiles:
+                    filename = subdir+'/'+fr
+                    os.remove(filename)
+    else:#针对一个文件夹
+        subdir = dirpath
+        files = os.listdir(subdir)
+        filenum = len(files)
+        if filenum>num:
+            subfiles = random.sample(files,filenum-num)
+            for fr in subfiles:
+                filename = subdir+'/'+fr
+                os.remove(filename)
+
+'''
 函数：DataBalance（）
 函数功能：平衡数据集，但只是粗略的并不能十分精确
 输入参数：dirpath----数据集路径
@@ -321,22 +352,26 @@ def DataBalance(dirpath,basinum,new_w,new_h):
         subdir = dirpath+'/'+sub
         files = os.listdir(subdir)
         Lfile = len(files)
-        if Lfile > basinum:
+        if Lfile == basinum:
             continue
+        elif Lfile > basinum:
+            #continue
+            ReduceData(subdir,basinum)
+            Resize(subdir,new_h,new_w)
         
         #如果basinum/Lfile=<2,则图片数量在basinum/2~basinum之间
         #因此只水平翻转就能达到目的
-        if basinum/Lfile <= 2:
+        elif basinum/Lfile <= 2:
             DataAugmentFlip(subdir,targetnum=basinum)
         
         #如果basinum/Lfile =<8,则翻转一次，在从四角随机剪裁
-        if 2< basinum/Lfile <= 8:
+        elif 2< basinum/Lfile <= 8:
             DataAugmentFlip(subdir)
             Resize(subdir,new_h,new_w)
             DataAugmentCrop(subdir,new_w,new_h,True,True,True,True,targetnum=basinum)
         
         #如果basinum/Lfile > 8
-        if basinum/Lfile > 8:
+        elif basinum/Lfile > 8:
             addnum = (basinum/Lfile)/2/4 + 1
             DataAugmentFlip(subdir)
             Resize(subdir,new_h,new_w)
@@ -346,10 +381,11 @@ def DataBalance(dirpath,basinum,new_w,new_h):
 
 
 if __name__=='__main__':
-    dir_path = 'F:/Small_data'
+    dir_path = 'F:/Small_data/10'
     new_h = 128
     new_w = 128
     #Resize(dir_path,new_h,new_w)
     #DataAugment(dir_path,61)
     #DataAugmentCrop(dir_path,20,144,144,True,True,True,True,60)
-    DataBalance(dir_path,40)
+    #DataBalance(dir_path,40)
+    ReduceData(dir_path,4)
