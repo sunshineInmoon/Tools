@@ -110,6 +110,6 @@ if __name__=='__main__':
     #Describe(result,outdir)
     
     
-    dirpath=r'E:/Face_data/FaceImages3'
-    DataSetInfo(dirpath)
+    dirpath=r'E:/Face_data/FaceImages'
+    DataSetInfo(dirpath,True)
     
