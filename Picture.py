@@ -189,17 +189,26 @@ def DataAugmentCrop(picdir,new_w,new_h,leftup=True,leftdown=False,\
                 continue
             for fr in files:
                 filename = subdir+'/'+fr
+                #第一步，先将图片缩放到new_h*new_w，保存下来
                 img = cv2.imread(filename)
                 size = img.shape 
                 if size[0] != new_h or size[1] != new_w:
                     img0 = cv2.resize(img,(new_h,new_w),interpolation=cv2.INTER_CUBIC)
                     cv2.imwrite(filename,img0)
+                #第二步，重新读取该图片,把该图片缩放到new_h+16,new_w+16
+                img = cv2.imread(filename)
+                size = img.shape
+                '''
                 if size[0]<=(new_h+5) or size[1]<=(new_w+5):
                     img1 = cv2.resize(img,(new_w+16,new_h+16),\
                                         interpolation=cv2.INTER_CUBIC)
                     size=img1.shape
                 else:
                     img1 = img
+                '''
+                img1 = cv2.resize(img,(new_w+16,new_h+16),interpolation=cv2.INTER_CUBIC)
+                size = img1.shape
+                
                 if leftup == True:
                     for i in range(addnum):
                         xpoint = random.randint(0,size[1]-new_w)
@@ -259,17 +268,25 @@ def DataAugmentCrop(picdir,new_w,new_h,leftup=True,leftdown=False,\
         '''
         for fr in files:
             filename = subdir+'/'+fr
+            #第一步，先将图片缩放到new_h*new_w，保存下来
             img = cv2.imread(filename)
             size = img.shape 
             if size[0] != new_h or size[1] != new_w:
                 img0 = cv2.resize(img,(new_h,new_w),interpolation=cv2.INTER_CUBIC)
                 cv2.imwrite(filename,img0)
+                #第二步，重新读取该图片,把该图片缩放到new_h+16,new_w+16
+            img = cv2.imread(filename)
+            size = img.shape
+            '''
             if size[0]<=(new_h+5) or size[1]<=(new_w+5):
                 img1 = cv2.resize(img,(new_w+16,new_h+16),\
                                         interpolation=cv2.INTER_CUBIC)
                 size=img1.shape
             else:
                 img1 = img
+            '''
+            img1 = cv2.resize(img,(new_w+16,new_h+16),interpolation=cv2.INTER_CUBIC)
+            size = img1.shape
             if leftup == True:
                 for i in range(addnum):
                     xpoint = random.randint(0,size[1]-new_w)
@@ -395,13 +412,74 @@ def DataBalance(dirpath,basinum,new_w,new_h):
         
     print u'处理完毕'
 
+'''
+函数：GaussDataBalance()
+函数功能：使数据呈现高斯分布
+输入的参数：dirpath----数据集路径
+           model-----选择数据呈现的分布类型，默认是高斯分布gauss
+           其他类型暂时未加
+           new_h----处理后图片高度
+           new_w----处理后图片宽度
+           mu----高斯分布的均值，这里不能是0，
+           std----高斯分布方差，建议5，如果为1，其实相差不大 
+'''
+def GaussDataBalance(dirpath,new_w,new_h,mu,std=5,model='gauss'):
+    if not os.path.exists(dirpath):
+        print u'数据库路径不存在！'
+        sys.exit(0)
+    dirs = os.listdir(dirpath)
+    numlist = []
+    #产生一个高斯分布序列
+    if model == 'gauss':
+        for i in range(len(dirs)):
+            N = random.gauss(mu,std)
+            n = round(N,0)
+            #print n
+            numlist.append(int(n))
+    
+    Num = 0 #处理第Num个文件夹
+    for sub in dirs:
+        basinum = numlist[Num]
+        if basinum <= 0:
+            basinum = 1
+        subdir = dirpath+'/'+sub
+        files = os.listdir(subdir)
+        Lfile = len(files)
+        if Lfile == basinum:
+            continue
+        elif Lfile > basinum:
+            #continue
+            ReduceData(subdir,basinum)
+            Resize(subdir,new_h,new_w)
+        
+        #如果basinum/Lfile=<2,则图片数量在basinum/2~basinum之间
+        #因此只水平翻转就能达到目的
+        elif basinum/Lfile <= 2:
+            DataAugmentFlip(subdir,targetnum=basinum)
+        
+        #如果basinum/Lfile =<8,则翻转一次，在从四角随机剪裁
+        elif 2< basinum/Lfile <= 8:
+            DataAugmentFlip(subdir)
+            Resize(subdir,new_h,new_w)
+            DataAugmentCrop(subdir,new_w,new_h,True,True,True,True,targetnum=basinum)
+        
+        #如果basinum/Lfile > 8
+        elif basinum/Lfile > 8:
+            addnum = (basinum/Lfile)/2/4 + 1
+            DataAugmentFlip(subdir)
+            Resize(subdir,new_h,new_w)
+            DataAugmentCrop(subdir,new_w,new_h,True,True,True,True,addnum,targetnum=basinum)
+        
+    print u'处理完毕'
 
 if __name__=='__main__':
-    dir_path = 'F:/Small_data/10'
-    new_h = 128
-    new_w = 128
+    dir_path = 'E:/Face_data/FaceImages'
+    new_h = 144
+    new_w = 144
     #Resize(dir_path,new_h,new_w)
     #DataAugment(dir_path,61)
     #DataAugmentCrop(dir_path,20,144,144,True,True,True,True,60)
     #DataBalance(dir_path,40)
-    ReduceData(dir_path,4)
+    #ReduceData(dir_path,4)
+    GaussDataBalance(dir_path,144,144,50)
+    
