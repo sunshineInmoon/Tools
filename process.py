@@ -9,6 +9,7 @@ import shutil
 import random
 import numpy as np
 from operator import itemgetter,attrgetter
+import sys
 '''
 函数：renamedir（）
 函数功能：重命名文件夹，按一定顺序
@@ -157,16 +158,28 @@ def TestPair(dir_path,class_num,leftlist,rightlist,label,pos_num=3000,neg_num=30
         sub_dir = dir_path + '/' + dirs[sample]
         files = os.listdir(sub_dir)
         l = len(files)
-        file1 = random.randint(0,l-1)
-        file2 = random.randint(0,l-1)
-        while(file1 == file2):
+        if l == 0:
+            print sub_dir
+            print u'上面路径下没有文件'
+            sys.exit(0)
+        #选取正样本时有可能一个文件夹中只有一个文件
+        elif l == 1:
+            file_path = sub_dir + '/' + files[0]
+            left.write(file_path+'\n')
+            right.write(file_path+'\n')
+            label.write('1'+'\n')
+            print i
+        else:
+            file1 = random.randint(0,l-1)
             file2 = random.randint(0,l-1)
-        file1_path = sub_dir + '/' + files[file1]
-        file2_path = sub_dir + '/' + files[file2]
-        left.write(file1_path+'\n')
-        right.write(file2_path+'\n')
-        label.write('1'+'\n')
-        print i
+            while(file1 == file2):
+                file2 = random.randint(0,l-1)
+            file1_path = sub_dir + '/' + files[file1]
+            file2_path = sub_dir + '/' + files[file2]
+            left.write(file1_path+'\n')
+            right.write(file2_path+'\n')
+            label.write('1'+'\n')
+            print i
         
     left.close()
     right.close()
@@ -234,7 +247,7 @@ def Select_K_MaxMin(dir_path,k=1,model='All'):
     if not os.path.exists(dir_path):
         print u'路径不存在！'
     else:
-        label=[]
+        #label=[]
         fileNum=[]
         result=[]
         dirs = os.listdir(dir_path)
